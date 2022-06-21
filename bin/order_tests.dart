@@ -37,7 +37,9 @@ void main(List<String> arguments) {
 
     List<File> files = List.castFrom(
       directory.listSync(recursive: true)
-        ..retainWhere((FileSystemEntity e) => e is File),
+        ..retainWhere(
+          (FileSystemEntity e) => e is File && e.path.endsWith('.java'),
+        ),
     );
 
     for (File file in files) {
@@ -48,6 +50,7 @@ void main(List<String> arguments) {
       String filename = p.basename(file.path);
 
       String content = file.readAsStringSync();
+
       if (content.contains('MethodOrderer.OrderAnnotation.class')) {
         if (debug) {
           print('Working: $filename');
@@ -55,7 +58,7 @@ void main(List<String> arguments) {
 
         List<String> parts = content.split(RegExp(r'@Order\(.*\)'));
 
-        print('Ordering ${parts.length - 1} tests.');
+        print('$filename => Ordering ${parts.length - 1} tests!');
 
         StringBuffer sb = StringBuffer(parts.first);
 
