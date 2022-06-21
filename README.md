@@ -1,5 +1,7 @@
 # ORDER TESTS
 
+Simple script to put @Order numbers for @Test in a Java file.
+
 ## Command usage
 
 ```shell
