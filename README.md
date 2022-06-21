@@ -5,7 +5,7 @@ Simple script to put @Order numbers for @Test in a Java file.
 ## Command usage
 
 ```shell
-dev-config [--dry-run] [--debug] <path> [path1] ... [pathn]
+dev-config [--dry-run] [--debug] <path_0> [path_1] ... [path_0]
 ```
 
 | Parameter   | Required | Default Value | Description               |
