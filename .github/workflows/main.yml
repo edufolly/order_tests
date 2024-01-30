@@ -1,0 +1,189 @@
+name: Main Release
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  ########
+  # Test #
+  ########
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+
+      - name: Get Pubspec Version
+        run: |
+          VERSION=$(grep 'version:' pubspec.yaml | cut -c 10- | cut -f 1 -d '+')${{ env.SUFFIX }}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          URL=$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases/latest
+          LATEST=$(curl --silent "$URL" | jq -r .name)
+          if [ "$LATEST" == "v$VERSION" ]; then
+            echo "Version already used: $VERSION"
+            exit 1
+          fi
+
+      - name: Flutter Environment
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: false
+
+      - name: Dart Pub Get
+        timeout-minutes: 3
+        run: dart pub get
+
+      - name: Dart Analyze
+        run: dart analyze --fatal-infos
+
+      # TODO - Tests
+
+
+  ###############
+  # Linux Build #
+  ###############
+  linux-build:
+    name: Linux Build
+    needs: [ test ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: false
+
+      - name: Build
+        run: |
+          dart --version
+          mkdir -p build
+          dart pub get
+          dart compile exe -o build/order-tests bin/order_tests.dart
+          chmod a+x build/order-tests
+
+      - name: Compress Build
+        working-directory: build
+        run: tar -cvzf order-tests-linux.tar.gz order-tests
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: order-tests-linux
+          path: build/order-tests-linux.tar.gz
+          retention-days: 1
+
+  #################
+  # Windows Build #
+  #################
+  windows-build:
+    name: Windows Build
+    needs: [ test ]
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: false
+
+      - name: Build
+        run: |
+          dart --version
+          mkdir build
+          dart pub get
+          dart compile exe -o build/order-tests.exe bin/order_tests.dart
+
+      - name: Compress Build
+        working-directory: build
+        run: Compress-Archive order-tests.exe order-tests-windows.zip
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: order-tests-windows
+          path: build/order-tests-windows.zip
+          retention-days: 1
+
+  ###############
+  # MacOS Build #
+  ###############
+  macos-build:
+    name: MacOS Build
+    needs: [ test ]
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: false
+
+      - name: Build
+        run: |
+          dart --version
+          mkdir -p build
+          dart pub get
+          dart compile exe -o build/order-tests bin/order_tests.dart
+          chmod a+x build/order-tests
+
+      - name: Compress Build
+        working-directory: build
+        run: tar -cvzf order-tests-macos.tar.gz order-tests
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: order-tests-macos
+          path: build/order-tests-macos.tar.gz
+          retention-days: 1
+
+  ##########
+  # Deploy #
+  ##########
+  deploy:
+    name: Deploy
+    needs: [ test, linux-build, windows-build, macos-build ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+
+      - name: Creating a GitHub Tag
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          custom_tag: ${{ env.VERSION }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List
+        working-directory: artifacts
+        run: ls -la
+
+      - name: Create a GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v${{ env.VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: "artifacts/**/*.tar.gz,artifacts/**/*.zip"

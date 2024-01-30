@@ -5,7 +5,7 @@ import 'package:path/path.dart' as p;
 ///
 ///
 void main(List<String> arguments) {
-  List<String> newArgs = List<String>.from(arguments);
+  final List<String> newArgs = List<String>.from(arguments);
 
   bool dryRun = false;
 
@@ -23,8 +23,8 @@ void main(List<String> arguments) {
     exitError('Path is required.');
   }
 
-  for (String path in newArgs) {
-    Directory directory = Directory(path);
+  for (final String path in newArgs) {
+    final Directory directory = Directory(path);
 
     if (!directory.existsSync()) {
       print('[warn] Path not found: ${directory.path}');
@@ -35,29 +35,32 @@ void main(List<String> arguments) {
       print('Working: ${directory.path}');
     }
 
-    List<File> files = List.castFrom(
+    final List<File> files = List.castFrom(
       directory.listSync(recursive: true)
-        ..retainWhere((FileSystemEntity e) => e is File),
+        ..retainWhere(
+          (FileSystemEntity e) => e is File && e.path.endsWith('.java'),
+        ),
     );
 
-    for (File file in files) {
+    for (final File file in files) {
       if (debug) {
         print('File: ${file.path}');
       }
 
-      String filename = p.basename(file.path);
+      final String filename = p.basename(file.path);
 
-      String content = file.readAsStringSync();
+      final String content = file.readAsStringSync();
+
       if (content.contains('MethodOrderer.OrderAnnotation.class')) {
         if (debug) {
           print('Working: $filename');
         }
 
-        List<String> parts = content.split(RegExp(r'@Order\(.*\)'));
+        final List<String> parts = content.split(RegExp(r'@Order\(.*\)'));
 
-        print('Ordering ${parts.length - 1} tests.');
+        print('$filename => Ordering ${parts.length - 1} tests!');
 
-        StringBuffer sb = StringBuffer(parts.first);
+        final StringBuffer sb = StringBuffer(parts.first);
 
         for (int i = 1; i < parts.length; i++) {
           sb
