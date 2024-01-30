@@ -1,7 +1,3 @@
-## 0.0.2
-
-- Updating to Dart3.
-
-## 0.0.1
+## 0.0.1 - 2024-01-30
 
 - Initial version.
