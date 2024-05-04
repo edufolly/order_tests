@@ -22,11 +22,16 @@ jobs:
         run: |
           VERSION=$(grep 'version:' pubspec.yaml | cut -c 10- | cut -f 1 -d '+')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          CODE=$(grep 'const String version = ' bin/order_tests.dart | cut -c 25- | cut -f 1 -d "'")
+          if [ "$VERSION" != "$CODE" ]; then
+            echo "Version mismatch: $VERSION != $CODE"
+            exit 1
+          fi
           URL=$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases/latest
           LATEST=$(curl --silent "$URL" | jq -r .name)
           if [ "$LATEST" == "v$VERSION" ]; then
             echo "Version already used: $VERSION"
-            exit 1
+            exit 2
           fi
 
       - name: Flutter Environment
