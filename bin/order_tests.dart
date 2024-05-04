@@ -38,7 +38,8 @@ void main(List<String> arguments) {
     final List<File> files = List.castFrom(
       directory.listSync(recursive: true)
         ..retainWhere(
-          (FileSystemEntity e) => e is File && e.path.endsWith('.java'),
+          (FileSystemEntity e) =>
+              e is File && RegExp(r'\.(java|kt)$').hasMatch(e.path),
         ),
     );
 
@@ -51,7 +52,7 @@ void main(List<String> arguments) {
 
       final String content = file.readAsStringSync();
 
-      if (content.contains('MethodOrderer.OrderAnnotation.class')) {
+      if (content.contains('MethodOrderer.OrderAnnotation')) {
         if (debug) {
           print('Working: $filename');
         }
