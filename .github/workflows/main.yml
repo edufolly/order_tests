@@ -170,7 +170,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Creating a GitHub Tag
-        uses: mathieudutour/github-tag-action@v6.1
+        uses: mathieudutour/github-tag-action@v6.2
         with:
           custom_tag: ${{ needs.test.outputs.version }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
