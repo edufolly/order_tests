@@ -14,26 +14,13 @@ final Uri repository = Uri.parse(
 ///
 ///
 void main(List<String> arguments) async {
-  final Response response = await get(repository).timeout(
-    const Duration(seconds: 1),
-  );
-
-  if (response.statusCode == 200) {
-    final Map<String, dynamic> map = json.decode(response.body);
-
-    final String latest = map['tag_name'].toString();
-
-    if (latest != 'v$version') {
-      final String line = '* New version available: $latest *';
-      print('');
-      print('*' * line.length);
-      print(line);
-      print('*' * line.length);
-      print('');
-    }
-  }
-
   final ArgParser argParser = ArgParser()
+    ..addSeparator('Options:')
+    ..addFlag(
+      'recursive',
+      defaultsTo: true,
+      help: 'Recursive search for files.',
+    )
     ..addFlag(
       'dry-run',
       abbr: 'd',
@@ -46,17 +33,23 @@ void main(List<String> arguments) async {
       negatable: false,
       help: 'Debug mode.',
     )
+    ..addSeparator('Administration options:')
     ..addFlag(
-      'help',
-      abbr: 'h',
-      negatable: false,
-      help: 'Help.',
+      'check-updates',
+      defaultsTo: true,
+      help: 'Check for updates.',
     )
     ..addFlag(
       'version',
       abbr: 'V',
       negatable: false,
       help: 'Version.',
+    )
+    ..addFlag(
+      'help',
+      abbr: 'h',
+      negatable: false,
+      help: 'Help.',
     );
 
   final ArgResults results = argParser.parse(arguments);
@@ -70,9 +63,38 @@ void main(List<String> arguments) async {
     exit(0);
   }
 
-  final bool dryRun = results.wasParsed('dry-run');
+  final bool recursive = results['recursive'];
 
-  final bool debug = results.wasParsed('debug');
+  final bool dryRun = results['dry-run'];
+
+  final bool debug = results['debug'];
+
+  if (results['check-updates']) {
+    try {
+      final Response response = await get(repository).timeout(
+        const Duration(seconds: 2),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> map = json.decode(response.body);
+
+        final String latest = map['tag_name'].toString();
+
+        if (latest != 'v$version') {
+          final String line = '* New version available: $latest *';
+          print('');
+          print('*' * line.length);
+          print(line);
+          print('*' * line.length);
+          print('');
+        }
+      }
+    } on Exception catch (e) {
+      if (debug) {
+        print('[warn] Unable to check for updates.\n $e');
+      }
+    }
+  }
 
   if (results.rest.isEmpty) {
     printUsage(argParser, error: 'Path is required.');
@@ -91,7 +113,7 @@ void main(List<String> arguments) async {
     }
 
     final List<File> files = List.castFrom(
-      directory.listSync(recursive: true)
+      directory.listSync(recursive: recursive)
         ..retainWhere(
           (FileSystemEntity e) =>
               e is File && RegExp(r'\.(java|kt)$').hasMatch(e.path),
@@ -136,6 +158,9 @@ void main(List<String> arguments) async {
   }
 }
 
+///
+///
+///
 void printUsage(ArgParser argParser, {String? error, int? code}) {
   if (error != null) {
     print('\n$error\n');

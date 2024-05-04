@@ -3,7 +3,8 @@
 ## 0.0.3 - 2024-05-04
 
 - Adding Dart `args` plugin.
-- Adding version check.
+- Check new version available.
+- Adding recursive option.
 
 ## 0.0.2 - 2024-05-04
 
