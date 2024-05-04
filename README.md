@@ -1,6 +1,10 @@
 # ORDER TESTS
 
-Simple script to put **@Order** numbers for **@Test** in a Java / Kotlin file.
+Simple app to put **@Order** numbers for **@Test** in a Java / Kotlin file.
+
+## Install script
+
+https://gist.github.com/edufolly/b994536b9183428c20d41dca68925e80
 
 ## Command usage
 
