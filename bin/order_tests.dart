@@ -1,29 +1,84 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:args/args.dart';
+import 'package:http/http.dart';
 import 'package:path/path.dart' as p;
 
+const String version = '0.0.3';
+
+final Uri repository = Uri.parse(
+  'https://api.github.com/repos/edufolly/order_tests/releases/latest',
+);
+
 ///
 ///
 ///
-void main(List<String> arguments) {
-  final List<String> newArgs = List<String>.from(arguments);
+void main(List<String> arguments) async {
+  final Response response = await get(repository).timeout(
+    const Duration(seconds: 1),
+  );
 
-  bool dryRun = false;
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> map = json.decode(response.body);
 
-  if (newArgs.contains('--dry-run')) {
-    dryRun = newArgs.remove('--dry-run');
+    final String latest = map['tag_name'].toString();
+
+    if (latest != 'v$version') {
+      final String line = '* New version available: $latest *';
+      print('');
+      print('*' * line.length);
+      print(line);
+      print('*' * line.length);
+      print('');
+    }
   }
 
-  bool debug = false;
+  final ArgParser argParser = ArgParser()
+    ..addFlag(
+      'dry-run',
+      abbr: 'd',
+      negatable: false,
+      help: 'Dry run, do not write to files.',
+    )
+    ..addFlag(
+      'debug',
+      abbr: 'v',
+      negatable: false,
+      help: 'Debug mode.',
+    )
+    ..addFlag(
+      'help',
+      abbr: 'h',
+      negatable: false,
+      help: 'Help.',
+    )
+    ..addFlag(
+      'version',
+      abbr: 'V',
+      negatable: false,
+      help: 'Version.',
+    );
 
-  if (newArgs.contains('--debug')) {
-    debug = newArgs.remove('--debug');
+  final ArgResults results = argParser.parse(arguments);
+
+  if (results.wasParsed('help')) {
+    printUsage(argParser);
   }
 
-  if (newArgs.isEmpty) {
-    exitError('Path is required.');
+  if (results.wasParsed('version')) {
+    print('Version: $version');
+    exit(0);
   }
 
-  for (final String path in newArgs) {
+  final bool dryRun = results.wasParsed('dry-run');
+
+  final bool debug = results.wasParsed('debug');
+
+  if (results.rest.isEmpty) {
+    printUsage(argParser, error: 'Path is required.');
+  }
+
+  for (final String path in results.rest) {
     final Directory directory = Directory(path);
 
     if (!directory.existsSync()) {
@@ -81,10 +136,11 @@ void main(List<String> arguments) {
   }
 }
 
-///
-///
-///
-void exitError(String error, {int code = 1}) {
-  print(error);
-  exit(code);
+void printUsage(ArgParser argParser, {String? error, int? code}) {
+  if (error != null) {
+    print('\n$error\n');
+  }
+  print('\nUsage: order-tests [options] <path_0> [path_1] ... [path_n]\n');
+  print(argParser.usage);
+  exit(error == null ? 0 : code ?? 1);
 }
