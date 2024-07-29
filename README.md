@@ -1,11 +1,15 @@
 # ORDER TESTS
 
-Simple script to put **@Order** numbers for **@Test** in a Java / Kotlin file.
+Simple app to put **@Order** numbers for tests in a Java or Kotlin file.
+
+## Install script
+
+https://gist.github.com/edufolly/b994536b9183428c20d41dca68925e80
 
 ## Command usage
 
 ```shell
-order-tests [] [--dry-run] [--debug] <path_0> [path_1] ... [path_x]
+order-tests [--dry-run] [--debug] <path_0> [path_1] ... [path_x]
 ```
 
 | Parameter          | Abbr | Required | Default Value | Description                    |
