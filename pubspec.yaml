@@ -1,6 +1,6 @@
 name: order_tests
 description: Order tests.
-version: 0.0.3
+version: 0.0.4
 homepage: https://github.com/edufolly/order_tests
 
 environment:
