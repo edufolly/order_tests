@@ -4,11 +4,16 @@ Simple app to put **@Order** numbers for tests in a Java or Kotlin file.
 
 ## Install script
 
-https://gist.github.com/edufolly/b994536b9183428c20d41dca68925e80
+https://github.com/edufolly/order_tests/refs/heads/main/scripts/linux_x86_64.sh
 
-## Direct install for Linux
+## Direct installation for Linux x86
 
-curl -fsSL https://gist.githubusercontent.com/edufolly/b994536b9183428c20d41dca68925e80/raw/ | sudo bash
+```shell
+curl -fsSL https://raw.githubusercontent.com/edufolly/order_tests/refs/heads/main/scripts/linux_x86_64.sh | sudo bash
+```
+
+For Windows and Mac, please visit the release page:
+https://github.com/edufolly/order_tests/releases/latest
 
 ## Command usage
 
