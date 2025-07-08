@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.0.7 - 2025-07-08
+- Fixing installation scripts
+
 ## 0.0.6 - 2025-07-08
 
 - Updating Dart packages.

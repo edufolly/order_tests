@@ -1,7 +1,6 @@
 #!/bin/sh
 
-filename="order-tests-linux.tar.gz"
-# filename="order-tests-linux-x86-64.tar.gz"
+filename="order-tests-linux-x86-64.tar.gz"
 
 # Fetch release information
 response=$(curl --silent --show-error --fail \
