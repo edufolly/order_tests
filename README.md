@@ -6,6 +6,10 @@ Simple app to put **@Order** numbers for tests in a Java or Kotlin file.
 
 https://gist.github.com/edufolly/b994536b9183428c20d41dca68925e80
 
+## Direct install for Linux
+
+curl -fsSL https://gist.githubusercontent.com/edufolly/b994536b9183428c20d41dca68925e80/raw/ | sudo bash
+
 ## Command usage
 
 ```shell
