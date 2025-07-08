@@ -4,7 +4,7 @@ import 'package:args/args.dart';
 import 'package:http/http.dart';
 import 'package:path/path.dart' as p;
 
-const String version = '0.0.3';
+const String version = '0.0.4';
 
 final Uri repository = Uri.parse(
   'https://api.github.com/repos/edufolly/order_tests/releases/latest',
@@ -81,11 +81,11 @@ void main(List<String> arguments) async {
         final String latest = map['tag_name'].toString();
 
         if (latest != 'v$version') {
-          final String line = '* New version available: $latest *';
           print('');
-          print('*' * line.length);
-          print(line);
-          print('*' * line.length);
+          print('*' * 43);
+          print('* New version available: ${latest.padRight(17)}*');
+          print('* https://github.com/edufolly/order_tests *');
+          print('*' * 43);
           print('');
         }
       }
