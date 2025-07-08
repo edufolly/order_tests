@@ -78,13 +78,13 @@ jobs:
 
       - name: Compress Build
         working-directory: build
-        run: tar -cvzf order-tests-linux.tar.gz order-tests
+        run: tar -cvzf order-tests-linux-x86-64.tar.gz order-tests
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: order-tests-linux
-          path: build/order-tests-linux.tar.gz
+          name: order-tests-linux-x86-64
+          path: build/order-tests-linux-x86-64.tar.gz
           retention-days: 1
 
   #################

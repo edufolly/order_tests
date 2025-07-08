@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.6 - 2025-07-08
+
+- Updating Dart packages.
+- Updating project structure.
+
 ## 0.0.3 - 2024-05-04
 
 - Adding Dart `args` plugin.
