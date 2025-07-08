@@ -4,7 +4,7 @@ version: 0.0.4
 homepage: https://github.com/edufolly/order_tests
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.8.0 <4.0.0"
 
 dependencies:
   # https://pub.dev/packages/args
@@ -17,7 +17,6 @@ dependencies:
   path: ^1.9.0
 
 dev_dependencies:
-
   # https://pub.dev/packages/lints
   flutter_lints: ^6.0.0
 
