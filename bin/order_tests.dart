@@ -4,7 +4,7 @@ import 'package:args/args.dart';
 import 'package:http/http.dart';
 import 'package:path/path.dart' as p;
 
-const String version = '0.0.6';
+const String version = '0.0.7';
 
 final Uri repository = Uri.parse(
   'https://api.github.com/repos/edufolly/order_tests/releases/latest',
